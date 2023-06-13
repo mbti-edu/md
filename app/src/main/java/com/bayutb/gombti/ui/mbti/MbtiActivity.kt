@@ -29,7 +29,7 @@ class MbtiActivity : AppCompatActivity() {
     private lateinit var questionsList: List<String>
     private lateinit var sessionManager: RegisterSessionManager
     private var index = 0
-    private var points= mutableListOf<String>()
+    private var points = mutableListOf<String>()
     private var mbtiType = ""
 
     @SuppressLint("SetTextI18n")
@@ -68,41 +68,52 @@ class MbtiActivity : AppCompatActivity() {
                 when (index) {
                     totalQuestions -> {
                         tvQuestion.text = ""
-                        btnNext.visibility = View.INVISIBLE
-                        llCurrentTotal.visibility = View.INVISIBLE
-                        rbNo.visibility = View.INVISIBLE
-                        rbYes.visibility = View.INVISIBLE
-                        progressBar.visibility = View.VISIBLE
                         showLoading(true)
-                        ApiConfig.getMbtiInstance().mbtiTest(MbtiRequest(points.toTypedArray())).enqueue( object : Callback<MbtiTestResponse> {
-                            override fun onResponse(
-                                call: Call<MbtiTestResponse>,
-                                response: Response<MbtiTestResponse>
-                            ) {
-                                if (response.isSuccessful) {
-                                    if (response.body() != null) {
-                                        mbtiType = response.body()!!.predictedMbti
-                                        if (userId != null) {
-                                            showLoading(false)
-                                            postMbti(this@MbtiActivity, userId, mbtiType, sessionManager)
+                        ApiConfig.getMbtiInstance().mbtiTest(MbtiRequest(points.toTypedArray()))
+                            .enqueue(object : Callback<MbtiTestResponse> {
+                                override fun onResponse(
+                                    call: Call<MbtiTestResponse>,
+                                    response: Response<MbtiTestResponse>
+                                ) {
+                                    if (response.isSuccessful) {
+                                        if (response.body() != null) {
+                                            mbtiType = response.body()!!.predictedMbti
+                                            if (userId != null) {
+                                                showLoading(false)
+                                                postMbti(
+                                                    this@MbtiActivity,
+                                                    userId,
+                                                    mbtiType,
+                                                    sessionManager
+                                                )
+                                            }
                                         }
+                                    } else {
+                                        showLoading(false)
+                                        Toast.makeText(
+                                            this@MbtiActivity,
+                                            "Failed to retrieve mbti type from our server",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
                                     }
-                                } else {
-                                    showLoading(false)
-                                    Toast.makeText(this@MbtiActivity, "Failed to retrieve mbti type from our server", Toast.LENGTH_SHORT).show()
+                                    Log.d("Failure Data : ", points.toTypedArray().toString())
                                 }
-                                Log.d("Failure Data : ", points.toTypedArray().toString())
-                            }
 
-                            override fun onFailure(call: Call<MbtiTestResponse>, t: Throwable) {
-                                Toast.makeText(this@MbtiActivity, "Failed to retrieve mbti type from our server", Toast.LENGTH_SHORT).show()
-                            }
-                        })
+                                override fun onFailure(call: Call<MbtiTestResponse>, t: Throwable) {
+                                    Toast.makeText(
+                                        this@MbtiActivity,
+                                        "Failed to retrieve mbti type from our server",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            })
                         showLoading(false)
                     }
+
                     totalQuestions - 1 -> {
                         btnNext.text = getString(R.string.btn_finish)
                     }
+
                     else -> {
                         tvQuestion.text = questionsList[index]
                     }
@@ -117,14 +128,20 @@ class MbtiActivity : AppCompatActivity() {
 
     private fun showLoading(status: Boolean) {
         if (status) {
-            binding.progressBar.visibility = View.VISIBLE
+            binding.progressBar.visibility = View.GONE
         } else {
-            binding.progressBar.visibility = View.INVISIBLE
+            binding.apply {
+                btnNext.visibility = View.INVISIBLE
+                llCurrentTotal.visibility = View.INVISIBLE
+                rbNo.visibility = View.INVISIBLE
+                rbYes.visibility = View.INVISIBLE
+                progressBar.visibility = View.VISIBLE
+            }
         }
     }
 }
 
-private fun showAlert(context: Context, message :String) {
+private fun showAlert(context: Context, message: String) {
     val alertDialog = AlertDialog.Builder(context)
     alertDialog.setMessage(message)
     alertDialog.setPositiveButton(context.getString(R.string.dialog_mbti_positive)) { dialogInterface: DialogInterface, _: Int ->
@@ -139,26 +156,36 @@ private fun showAlert(context: Context, message :String) {
     dialog.show()
 }
 
-private fun postMbti(context: Context, userId: String, mbtiType: String, sessionManager: RegisterSessionManager) {
-    ApiConfig.getInstance().registerMbti(userId, mbtiType).enqueue(object : Callback<ResultMbtiResponse> {
-        override fun onResponse(
-            call: Call<ResultMbtiResponse>,
-            response: Response<ResultMbtiResponse>
-        ) {
-            if (response.isSuccessful) {
-                sessionManager.clearSession()
-                showAlert(context,
-                    context.getString(R.string.dialog_mbti_success))
-            } else {
-                showAlert(context,
-                    context.getString(R.string.dialog_mbti_failed))
+private fun postMbti(
+    context: Context,
+    userId: String,
+    mbtiType: String,
+    sessionManager: RegisterSessionManager
+) {
+    ApiConfig.getInstance().registerMbti(userId, mbtiType)
+        .enqueue(object : Callback<ResultMbtiResponse> {
+            override fun onResponse(
+                call: Call<ResultMbtiResponse>,
+                response: Response<ResultMbtiResponse>
+            ) {
+                if (response.isSuccessful) {
+                    sessionManager.clearSession()
+                    showAlert(
+                        context,
+                        context.getString(R.string.dialog_mbti_success)
+                    )
+                } else {
+                    showAlert(
+                        context,
+                        context.getString(R.string.dialog_mbti_failed)
+                    )
+                }
+                Log.d("Success : ", response.body().toString())
             }
-            Log.d("Success : ", response.body().toString())
-        }
 
-        override fun onFailure(call: Call<ResultMbtiResponse>, t: Throwable) {
-            Log.d("Failure :", t.message.toString())
-        }
+            override fun onFailure(call: Call<ResultMbtiResponse>, t: Throwable) {
+                Log.d("Failure :", t.message.toString())
+            }
 
-    })
+        })
 }

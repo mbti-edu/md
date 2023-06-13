@@ -7,18 +7,7 @@
     android:backgroundTint="?attr/colorSurface"
     tools:context=".ui.mbti.MbtiActivity">
 
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="invisible"
-        android:indeterminateTintMode="src_in"
-        android:indeterminateTint="?attr/colorPrimary"
-        app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:translationZ="5dp"
-        app:layout_constraintStart_toStartOf="@+id/circularRevealLinearLayout2"
-        app:layout_constraintTop_toTopOf="@+id/circularRevealLinearLayout2" />
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
@@ -62,6 +51,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+
         <com.google.android.material.circularreveal.CircularRevealLinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -86,6 +76,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom">
+
+
 
                 <RadioGroup
                     android:id="@+id/rg_answer"
@@ -126,6 +118,18 @@
                         android:textColor="@drawable/text_color" />
 
                 </RadioGroup>
+
+                <ProgressBar
+                    android:id="@+id/progress_bar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:indeterminateTint="?attr/colorPrimary"
+                    android:indeterminateTintMode="src_in"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/rg_answer"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>
