@@ -92,7 +92,7 @@ class MbtiActivity : AppCompatActivity() {
                                         showLoading(false)
                                         Toast.makeText(
                                             this@MbtiActivity,
-                                            "Failed to retrieve mbti type from our server",
+                                            getString(R.string.toast_failed_mbti),
                                             Toast.LENGTH_SHORT
                                         ).show()
                                     }

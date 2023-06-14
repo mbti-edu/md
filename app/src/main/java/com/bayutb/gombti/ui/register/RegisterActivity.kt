@@ -6,10 +6,14 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.icu.util.Calendar
 import android.os.Bundle
+import android.text.TextUtils
 import android.util.Log
+import android.util.Patterns
+import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.addTextChangedListener
 import com.bayutb.gombti.R
 import com.bayutb.gombti.api.ApiConfig
 import com.bayutb.gombti.api.responses.RegisterResponse
@@ -43,7 +47,15 @@ class RegisterActivity : AppCompatActivity() {
             Log.d("Session Exists : ", sessionManager.loadSession()!!)
         }
 
+
+
         binding.apply {
+            etPassword.addTextChangedListener {
+                checkForm(etPassword, etPassword.text.toString())
+            }
+            etEmailAddress.addTextChangedListener {
+                checkForm(etEmailAddress, etEmailAddress.text.toString())
+            }
             etBirthDate.showSoftInputOnFocus = false
             etBirthDate.setOnClickListener {
                 val c = Calendar.getInstance()
@@ -125,6 +137,29 @@ class RegisterActivity : AppCompatActivity() {
 
         binding.btnRegister.isEnabled = !status
 
+    }
+
+    private fun checkForm(form :EditText, value: String) {
+
+        if (form == binding.etEmailAddress && !isValidEmail(value)) {
+            form.error = "Email tidak valid"
+            Log.d("checkForm : ", value)
+        } else if (form == binding.etPassword && isPasswordGood(value)) {
+            form.error = "Password harus lebih dari 8 digit"
+        }
+        Log.d("Error Status : ", "${form.text} from ${form.id} is ${isValidEmail(value)}")
+    }
+
+    private fun isValidEmail(target: CharSequence): Boolean {
+        return if (TextUtils.isEmpty(target)) {
+            false
+        } else {
+            Patterns.EMAIL_ADDRESS.matcher(target).matches()
+        }
+    }
+
+    private fun isPasswordGood(target: CharSequence): Boolean {
+        return target.length <= 8
     }
 }
 

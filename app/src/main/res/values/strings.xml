@@ -60,4 +60,5 @@
     <string name="toast_register_email_exists">Email sudah terdaftar</string>
     <string name="toast_login_wrong_cridential">Email atau password tidak ditemukan</string>
     <string name="toast_login_form_invalid">Silahkan isi email dan password terlebih dahulu</string>
+    <string name="toast_failed_mbti">Server kami mengalami gangguan :( \nMohon maaf atas ketidaknyamanannya</string>
 </resources>

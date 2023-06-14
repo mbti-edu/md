@@ -34,7 +34,10 @@ class SessionManager(context: Context) {
 
     fun clearAuth() {
         val editor = prefs.edit()
-        editor.clear()
+        editor.remove(USER_ID)
+        editor.remove(USER_EMAIL)
+        editor.remove(USER_NAME)
+        editor.remove(USER_MBTI)
         editor.apply()
     }
 
