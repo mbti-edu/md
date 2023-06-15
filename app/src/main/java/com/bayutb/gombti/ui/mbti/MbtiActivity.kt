@@ -43,7 +43,14 @@ class MbtiActivity : AppCompatActivity() {
         questionsList = DataSource.getQuestions()
 
         val totalQuestions = questionsList.size
-        val userId = intent.getStringExtra("userId")
+        var userId = sessionManager.loadSessionFromMainActivity()
+
+        if (userId == "0") {
+            userId = sessionManager.loadSessionFromMainActivity()
+            Log.d("UserID : 0", sessionManager.loadSessionFromMainActivity().toString())
+        }
+
+        Log.d("Session : ", "$userId")
 
         binding.apply {
             tvQuestion.text = questionsList[index]
@@ -102,7 +109,7 @@ class MbtiActivity : AppCompatActivity() {
                                 override fun onFailure(call: Call<MbtiTestResponse>, t: Throwable) {
                                     Toast.makeText(
                                         this@MbtiActivity,
-                                        "Failed to retrieve mbti type from our server",
+                                        getString(R.string.toast_failed_mbti),
                                         Toast.LENGTH_SHORT
                                     ).show()
                                 }
@@ -111,6 +118,7 @@ class MbtiActivity : AppCompatActivity() {
                     }
 
                     totalQuestions - 1 -> {
+                        tvQuestion.text = questionsList[index]
                         btnNext.text = getString(R.string.btn_finish)
                     }
 
@@ -119,6 +127,7 @@ class MbtiActivity : AppCompatActivity() {
                     }
 
                 }
+
 
                 Log.d("Check Data : ", "$points")
             }
@@ -169,7 +178,7 @@ private fun postMbti(
                 response: Response<ResultMbtiResponse>
             ) {
                 if (response.isSuccessful) {
-                    sessionManager.clearSession()
+                    sessionManager.clearSessionFromMainActivity()
                     showAlert(
                         context,
                         context.getString(R.string.dialog_mbti_success)

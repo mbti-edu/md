@@ -2,6 +2,7 @@ package com.bayutb.gombti
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.bayutb.gombti.databinding.ActivityMainBinding
@@ -11,7 +12,8 @@ import com.bayutb.gombti.ui.main.AccountFragment
 import com.bayutb.gombti.ui.main.HomeFragment
 import com.bayutb.gombti.ui.main.PersonalityFragment
 import com.bayutb.gombti.ui.main.SessionManager
-import com.bayutb.gombti.ui.register.RegisterActivity
+import com.bayutb.gombti.ui.mbti.MbtiActivity
+import com.bayutb.gombti.ui.register.RegisterSessionManager
 
 class MainActivity : AppCompatActivity() {
 
@@ -19,6 +21,7 @@ class MainActivity : AppCompatActivity() {
     private var userId: String?= null
     private var mbtiType: String ?= null
     private lateinit var sessionManager: SessionManager
+    private lateinit var registerSessionManager: RegisterSessionManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,8 +29,11 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         sessionManager = SessionManager(this@MainActivity)
+
         userId = sessionManager.checkAuth()
+        Log.d("User ID : MA", userId.toString())
         mbtiType = sessionManager.getMbti()
+
         sessionCheck(userId, mbtiType, sessionManager)
 
         val loginSession = LoginSession(
@@ -88,8 +94,10 @@ class MainActivity : AppCompatActivity() {
             }
             finish()
         } else if (mbtiType == null) {
-            val intent = Intent(this@MainActivity, RegisterActivity::class.java)
+            val intent = Intent(this@MainActivity, MbtiActivity::class.java)
             sessionManager.clearAuth()
+            registerSessionManager = RegisterSessionManager(this@MainActivity)
+            registerSessionManager.saveSessionFromMainActivity(userId)
             startActivity(intent)
             finish()
         }

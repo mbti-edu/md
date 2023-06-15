@@ -22,8 +22,8 @@ data class LoginResult(
 	@field:SerializedName("mbti")
 	val mbti: String,
 
-	@field:SerializedName("userId")
-	val userId: Int,
+	@field:SerializedName("Id")
+	val Id: Int,
 
 	@field:SerializedName("email")
 	val email: String
